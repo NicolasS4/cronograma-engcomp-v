@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horário Acadêmico</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #2980b9;
+            --success: #27ae60;
+            --warning: #e67e22;
+            --danger: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #1a252f;
+            --gray: #95a5a6;
+            --border-radius: 6px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 30px;
+            padding: 25px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--secondary);
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: var(--gray);
+            margin-bottom: 15px;
+        }
+
+        .current-time {
+            font-size: 1.1rem;
+            margin-top: 10px;
+            font-weight: 500;
+            color: var(--accent);
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 30px;
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .info-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border-top: 3px solid var(--secondary);
+        }
+
+        .info-card h2 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-card h2 i {
+            color: var(--secondary);
+        }
+
+        .class-info {
+            margin-bottom: 15px;
+        }
+
+        .class-name {
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+            color: var(--dark);
+        }
+
+        .class-time {
+            color: var(--gray);
+            margin-bottom: 5px;
+            font-size: 0.95rem;
+        }
+
+        .countdown {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: var(--border-radius);
+            text-align: center;
+        }
+
+        .countdown.soon {
+            background-color: rgba(230, 126, 34, 0.1);
+            color: var(--warning);
+        }
+
+        .countdown.now {
+            background-color: rgba(39, 174, 96, 0.1);
+            color: var(--success);
+        }
+
+        .schedule-container {
+            background-color: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        .schedule-header {
+            display: grid;
+            grid-template-columns: 100px repeat(5, 1fr);
+            background-color: var(--primary);
+            color: white;
+            font-weight: 500;
+        }
+
+        .schedule-header > div {
+            padding: 15px 10px;
+            text-align: center;
+        }
+
+        .schedule-body {
+            display: grid;
+            grid-template-columns: 100px repeat(5, 1fr);
+        }
+
+        .time-slot {
+            padding: 12px 8px;
+            text-align: center;
+            border-right: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            font-size: 0.9rem;
+            background-color: #f8f9fa;
+        }
+
+        .class-slot {
+            padding: 12px 8px;
+            border-right: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+            min-height: 75px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .class-slot.empty {
+            background-color: #f9f9f9;
+        }
+
+        .class-slot.current {
+            background-color: rgba(39, 174, 96, 0.08);
+            border-left: 4px solid var(--success);
+            transform: scale(1.02);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .class-slot.next {
+            background-color: rgba(230, 126, 34, 0.08);
+            border-left: 4px solid var(--warning);
+        }
+
+        .subject-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 0.95rem;
+        }
+
+        .subject-code {
+            font-size: 0.75rem;
+            color: var(--gray);
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 30px;
+            justify-content: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .color-box {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+        }
+
+        .color-box.current {
+            background-color: rgba(39, 174, 96, 0.2);
+            border: 2px solid var(--success);
+        }
+
+        .color-box.next {
+            background-color: rgba(230, 126, 34, 0.2);
+            border: 2px solid var(--warning);
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 18px 20px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            border-left: 4px solid var(--warning);
+            transform: translateX(150%);
+            transition: transform 0.5s ease;
+            max-width: 350px;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--warning);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .notification-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--gray);
+            transition: var(--transition);
+        }
+
+        .notification-close:hover {
+            color: var(--dark);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: var(--gray);
+            font-size: 0.9rem;
+            border-top: 1px solid #eee;
+        }
+
+        /* Cores para as disciplinas */
+        .CALCULO-I { background-color: rgba(52, 152, 219, 0.05); border-left: 3px solid #3498db; }
+        .ELET-DIG { background-color: rgba(155, 89, 182, 0.05); border-left: 3px solid #9b59b6; }
+        .FISICA-I { background-color: rgba(231, 76, 60, 0.05); border-left: 3px solid #e74c3c; }
+        .PROGRAMACAO { background-color: rgba(46, 204, 113, 0.05); border-left: 3px solid #2ecc71; }
+        .PROJETOS-I { background-color: rgba(241, 196, 15, 0.05); border-left: 3px solid #f1c40f; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Horário Semanal Acadêmico</h1>
+            <div class="subtitle">Período: 13/10/2025 a 27/02/2026</div>
+            <div class="current-time" id="currentTime">Carregando...</div>
+        </header>
+
+        <div class="dashboard">
+            <div class="info-card">
+                <h2><i class="fas fa-clock"></i> Próxima Aula</h2>
+                <div id="nextClassInfo">
+                    <div class="class-info">
+                        <div class="class-name" id="nextClassName">Carregando...</div>
+                        <div class="class-time" id="nextClassTime">--:-- --:--</div>
+                        <div id="nextClassDay">--</div>
+                    </div>
+                    <div class="countdown" id="countdown">--</div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <h2><i class="fas fa-info-circle"></i> Status Atual</h2>
+                <div id="currentStatus">
+                    <div class="class-info">
+                        <div class="class-name" id="currentStatusText">Verificando...</div>
+                        <div class="class-time" id="currentClassTime">--:-- --:--</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="schedule-container">
+            <div class="schedule-header">
+                <div>Horário</div>
+                <div>Segunda-feira</div>
+                <div>Terça-feira</div>
+                <div>Quarta-feira</div>
+                <div>Quinta-feira</div>
+                <div>Sexta-feira</div>
+            </div>
+            <div class="schedule-body" id="scheduleBody">
+                <!-- Horário será preenchido via JavaScript -->
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="color-box current"></div>
+                <span>Aula Atual</span>
+            </div>
+            <div class="legend-item">
+                <div class="color-box next"></div>
+                <span>Próxima Aula</span>
+            </div>
+        </div>
+
+        <div class="notification" id="notification">
+            <button class="notification-close" id="notificationClose">&times;</button>
+            <div class="notification-title"><i class="fas fa-bell"></i> Aviso</div>
+            <div class="notification-message" id="notificationMessage">Sua próxima aula está prestes a começar!</div>
+        </div>
+
+        <footer>
+            <p>Legenda das Disciplinas</p>
+            <p>CALCULO I (NITAE005) · ELETRONICA DIGITAL (ECO1003) · FISICA I (ECO1001) · PROGRAMACAO (ECO1004) · PROJETOS DE ENGENHARIA I (ECO1005)</p>
+        </footer>
+    </div>
+
+    <script>
+        // Dados do horário
+        const scheduleData = {
+            times: [
+                { start: "13:00", end: "13:50" },
+                { start: "13:50", end: "14:40" },
+                { start: "14:50", end: "15:40" },
+                { start: "15:40", end: "16:30" },
+                { start: "16:40", end: "17:30" },
+                { start: "17:30", end: "18:20" }
+            ],
+            days: ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira"],
+            classes: [
+                // Segunda-feira
+                [
+                    { name: "FISICA I", code: "ECO1001", className: "FISICA-I" },
+                    { name: "FISICA I", code: "ECO1001", className: "FISICA-I" },
+                    { name: "PROGRAMACAO", code: "ECO1004", className: "PROGRAMACAO" },
+                    { name: "PROGRAMACAO", code: "ECO1004", className: "PROGRAMACAO" },
+                    { name: "CALCULO I", code: "NITAE005", className: "CALCULO-I" },
+                    { name: "CALCULO I", code: "NITAE005", className: "CALCULO-I" }
+                ],
+                // Terça-feira
+                [
+                    { name: "PROJETOS I", code: "ECO1005", className: "PROJETOS-I" },
+                    { name: "PROJETOS I", code: "ECO1005", className: "PROJETOS-I" },
+                    { name: "ELET. DIG.", code: "ECO1003", className: "ELET-DIG" },
+                    { name: "ELET. DIG.", code: "ECO1003", className: "ELET-DIG" },
+                    { name: "", code: "", className: "empty" },
+                    { name: "", code: "", className: "empty" }
+                ],
+                // Quarta-feira
+                [
+                    { name: "FISICA I", code: "ECO1001", className: "FISICA-I" },
+                    { name: "FISICA I", code: "ECO1001", className: "FISICA-I" },
+                    { name: "PROGRAMACAO", code: "ECO1004", className: "PROGRAMACAO" },
+                    { name: "PROGRAMACAO", code: "ECO1004", className: "PROGRAMACAO" },
+                    { name: "CALCULO I", code: "NITAE005", className: "CALCULO-I" },
+                    { name: "CALCULO I", code: "NITAE005", className: "CALCULO-I" }
+                ],
+                // Quinta-feira
+                [
+                    { name: "", code: "", className: "empty" },
+                    { name: "", code: "", className: "empty" },
+                    { name: "ELET. DIG.", code: "ECO1003", className: "ELET-DIG" },
+                    { name: "ELET. DIG.", code: "ECO1003", className: "ELET-DIG" },
+                    { name: "ELET. DIG.", code: "ECO1003", className: "ELET-DIG" },
+                    { name: "ELET. DIG.", code: "ECO1003", className: "ELET-DIG" }
+                ],
+                // Sexta-feira
+                [
+                    { name: "PROJETOS I", code: "ECO1005", className: "PROJETOS-I" },
+                    { name: "PROJETOS I", code: "ECO1005", className: "PROJETOS-I" },
+                    { name: "PROGRAMACAO", code: "ECO1004", className: "PROGRAMACAO" },
+                    { name: "PROGRAMACAO", code: "ECO1004", className: "PROGRAMACAO" },
+                    { name: "CALCULO I", code: "NITAE005", className: "CALCULO-I" },
+                    { name: "CALCULO I", code: "NITAE005", className: "CALCULO-I" }
+                ]
+            ]
+        };
+
+        // Elementos DOM
+        const scheduleBody = document.getElementById('scheduleBody');
+        const currentTimeElement = document.getElementById('currentTime');
+        const nextClassNameElement = document.getElementById('nextClassName');
+        const nextClassTimeElement = document.getElementById('nextClassTime');
+        const nextClassDayElement = document.getElementById('nextClassDay');
+        const countdownElement = document.getElementById('countdown');
+        const currentStatusTextElement = document.getElementById('currentStatusText');
+        const currentClassTimeElement = document.getElementById('currentClassTime');
+        const notification = document.getElementById('notification');
+        const notificationMessage = document.getElementById('notificationMessage');
+        const notificationClose = document.getElementById('notificationClose');
+
+        // Variáveis globais
+        let currentClass = null;
+        let nextClass = null;
+        let notificationShown = false;
+
+        // Inicialização
+        function init() {
+            renderSchedule();
+            updateTime();
+            setInterval(updateTime, 1000); // Atualizar a cada segundo
+        }
+
+        // Renderizar a tabela de horários
+        function renderSchedule() {
+            scheduleBody.innerHTML = '';
+            
+            // Adicionar slots de horário
+            scheduleData.times.forEach((time, timeIndex) => {
+                // Slot de horário
+                const timeSlot = document.createElement('div');
+                timeSlot.className = 'time-slot';
+                timeSlot.textContent = `${time.start} - ${time.end}`;
+                scheduleBody.appendChild(timeSlot);
+                
+                // Slots de aula para cada dia
+                scheduleData.days.forEach((day, dayIndex) => {
+                    const classData = scheduleData.classes[dayIndex][timeIndex];
+                    const classSlot = document.createElement('div');
+                    classSlot.className = `class-slot ${classData.className}`;
+                    
+                    if (classData.name) {
+                        classSlot.innerHTML = `
+                            <div class="subject-name">${classData.name}</div>
+                            <div class="subject-code">${classData.code}</div>
+                        `;
+                    } else {
+                        classSlot.textContent = '—';
+                        classSlot.classList.add('empty');
+                    }
+                    
+                    scheduleBody.appendChild(classSlot);
+                });
+            });
+        }
+
+        // Atualizar informações de tempo e próximas aulas
+        function updateTime() {
+            const now = new Date();
+            const currentTime = formatTime(now);
+            const currentDay = now.getDay(); // 0 = Domingo, 1 = Segunda, etc.
+            const currentDayIndex = currentDay - 1; // Ajustar para nosso índice (0 = Segunda)
+            
+            currentTimeElement.textContent = `Horário Atual: ${currentTime}`;
+            
+            // Verificar se estamos em um dia de semana válido (Segunda a Sexta)
+            if (currentDayIndex >= 0 && currentDayIndex < 5) {
+                checkCurrentAndNextClasses(now, currentDayIndex);
+            } else {
+                // Fim de semana
+                currentStatusTextElement.textContent = "Fim de semana! Sem aulas hoje.";
+                currentClassTimeElement.textContent = "";
+                nextClassNameElement.textContent = "Próxima aula na segunda-feira";
+                nextClassTimeElement.textContent = "";
+                nextClassDayElement.textContent = "";
+                countdownElement.textContent = "";
+                countdownElement.className = "countdown";
+            }
+            
+            updateScheduleHighlighting();
+        }
+
+        // Verificar aulas atuais e próximas
+        function checkCurrentAndNextClasses(now, currentDayIndex) {
+            const currentTime = now.getHours() * 60 + now.getMinutes(); // Tempo em minutos
+            let foundCurrent = false;
+            let foundNext = false;
+            
+            // Resetar
+            currentClass = null;
+            nextClass = null;
+            
+            // Verificar aulas do dia atual
+            for (let i = 0; i < scheduleData.times.length; i++) {
+                const classTime = scheduleData.times[i];
+                const classStart = timeToMinutes(classTime.start);
+                const classEnd = timeToMinutes(classTime.end);
+                
+                // Verificar se é a aula atual
+                if (currentTime >= classStart && currentTime < classEnd) {
+                    currentClass = {
+                        dayIndex: currentDayIndex,
+                        timeIndex: i,
+                        classData: scheduleData.classes[currentDayIndex][i],
+                        start: classStart,
+                        end: classEnd
+                    };
+                    foundCurrent = true;
+                    
+                    // Atualizar status atual
+                    currentStatusTextElement.textContent = `Aula Atual: ${currentClass.classData.name}`;
+                    currentClassTimeElement.textContent = `${classTime.start} - ${classTime.end}`;
+                    
+                    // Calcular tempo restante da aula atual
+                    const timeLeft = classEnd - currentTime;
+                    const hoursLeft = Math.floor(timeLeft / 60);
+                    const minutesLeft = timeLeft % 60;
+                    
+                    countdownElement.textContent = `Termina em: ${hoursLeft}h ${minutesLeft}m`;
+                    countdownElement.className = "countdown now";
+                    
+                    break;
+                }
+            }
+            
+            // Se não encontrou aula atual, procurar próxima aula
+            if (!foundCurrent) {
+                currentStatusTextElement.textContent = "Sem aula no momento";
+                currentClassTimeElement.textContent = "";
+                
+                // Procurar próxima aula no dia atual
+                for (let i = 0; i < scheduleData.times.length; i++) {
+                    const classTime = scheduleData.times[i];
+                    const classStart = timeToMinutes(classTime.start);
+                    
+                    if (currentTime < classStart && scheduleData.classes[currentDayIndex][i].name) {
+                        nextClass = {
+                            dayIndex: currentDayIndex,
+                            timeIndex: i,
+                            classData: scheduleData.classes[currentDayIndex][i],
+                            start: classStart
+                        };
+                        foundNext = true;
+                        break;
+                    }
+                }
+                
+                // Se não encontrou próxima aula no dia atual, procurar no próximo dia
+                if (!foundNext) {
+                    let nextDayIndex = (currentDayIndex + 1) % 5;
+                    let daysToAdd = 1;
+                    
+                    while (nextDayIndex !== currentDayIndex) {
+                        for (let i = 0; i < scheduleData.times.length; i++) {
+                            if (scheduleData.classes[nextDayIndex][i].name) {
+                                const classTime = scheduleData.times[i];
+                                const classStart = timeToMinutes(classTime.start);
+                                
+                                nextClass = {
+                                    dayIndex: nextDayIndex,
+                                    timeIndex: i,
+                                    classData: scheduleData.classes[nextDayIndex][i],
+                                    start: classStart,
+                                    daysToAdd: daysToAdd
+                                };
+                                foundNext = true;
+                                break;
+                            }
+                        }
+                        
+                        if (foundNext) break;
+                        
+                        nextDayIndex = (nextDayIndex + 1) % 5;
+                        daysToAdd++;
+                    }
+                }
+                
+                // Atualizar informações da próxima aula
+                if (foundNext && nextClass) {
+                    const classTime = scheduleData.times[nextClass.timeIndex];
+                    nextClassNameElement.textContent = nextClass.classData.name;
+                    nextClassTimeElement.textContent = `${classTime.start} - ${classTime.end}`;
+                    
+                    let dayName = scheduleData.days[nextClass.dayIndex];
+                    if (nextClass.daysToAdd > 0) {
+                        dayName = `${dayName} (em ${nextClass.daysToAdd} dia${nextClass.daysToAdd > 1 ? 's' : ''})`;
+                    }
+                    nextClassDayElement.textContent = dayName;
+                    
+                    // Calcular tempo até a próxima aula
+                    const timeUntilClass = calculateTimeUntilClass(now, nextClass);
+                    const hoursUntil = Math.floor(timeUntilClass / 60);
+                    const minutesUntil = timeUntilClass % 60;
+                    
+                    countdownElement.textContent = `Começa em: ${hoursUntil}h ${minutesUntil}m`;
+                    countdownElement.className = "countdown";
+                    
+                    // Mostrar notificação se a aula está próxima (15 minutos)
+                    if (timeUntilClass <= 15 && timeUntilClass > 0 && !notificationShown) {
+                        showNotification(nextClass, timeUntilClass);
+                    }
+                } else {
+                    nextClassNameElement.textContent = "Nenhuma aula encontrada";
+                    nextClassTimeElement.textContent = "";
+                    nextClassDayElement.textContent = "";
+                    countdownElement.textContent = "";
+                }
+            } else {
+                // Temos uma aula atual, então a próxima aula é a seguinte
+                let nextTimeIndex = currentClass.timeIndex + 1;
+                let nextDayIndex = currentClass.dayIndex;
+                let daysToAdd = 0;
+                
+                // Procurar próxima aula no mesmo dia
+                while (nextTimeIndex < scheduleData.times.length) {
+                    if (scheduleData.classes[nextDayIndex][nextTimeIndex].name) {
+                        nextClass = {
+                            dayIndex: nextDayIndex,
+                            timeIndex: nextTimeIndex,
+                            classData: scheduleData.classes[nextDayIndex][nextTimeIndex],
+                            start: timeToMinutes(scheduleData.times[nextTimeIndex].start),
+                            daysToAdd: daysToAdd
+                        };
+                        break;
+                    }
+                    nextTimeIndex++;
+                }
+                
+                // Se não encontrou, procurar no próximo dia
+                if (!nextClass) {
+                    nextDayIndex = (nextDayIndex + 1) % 5;
+                    daysToAdd = 1;
+                    
+                    while (nextDayIndex !== currentClass.dayIndex) {
+                        for (let i = 0; i < scheduleData.times.length; i++) {
+                            if (scheduleData.classes[nextDayIndex][i].name) {
+                                nextClass = {
+                                    dayIndex: nextDayIndex,
+                                    timeIndex: i,
+                                    classData: scheduleData.classes[nextDayIndex][i],
+                                    start: timeToMinutes(scheduleData.times[i].start),
+                                    daysToAdd: daysToAdd
+                                };
+                                break;
+                            }
+                        }
+                        
+                        if (nextClass) break;
+                        
+                        nextDayIndex = (nextDayIndex + 1) % 5;
+                        daysToAdd++;
+                    }
+                }
+                
+                // Atualizar informações da próxima aula
+                if (nextClass) {
+                    const classTime = scheduleData.times[nextClass.timeIndex];
+                    nextClassNameElement.textContent = nextClass.classData.name;
+                    nextClassTimeElement.textContent = `${classTime.start} - ${classTime.end}`;
+                    
+                    let dayName = scheduleData.days[nextClass.dayIndex];
+                    if (nextClass.daysToAdd > 0) {
+                        dayName = `${dayName} (em ${nextClass.daysToAdd} dia${nextClass.daysToAdd > 1 ? 's' : ''})`;
+                    }
+                    nextClassDayElement.textContent = dayName;
+                    
+                    // Calcular tempo até a próxima aula
+                    const timeUntilClass = calculateTimeUntilClass(now, nextClass);
+                    const hoursUntil = Math.floor(timeUntilClass / 60);
+                    const minutesUntil = timeUntilClass % 60;
+                    
+                    countdownElement.textContent = `Começa em: ${hoursUntil}h ${minutesUntil}m`;
+                    countdownElement.className = "countdown";
+                }
+            }
+        }
+
+        // Calcular tempo até uma aula
+        function calculateTimeUntilClass(now, nextClass) {
+            // Se a aula é em um dia futuro
+            if (nextClass.daysToAdd > 0) {
+                const targetDate = new Date(now);
+                targetDate.setDate(targetDate.getDate() + nextClass.daysToAdd);
+                targetDate.setHours(Math.floor(nextClass.start / 60), nextClass.start % 60, 0, 0);
+                
+                return Math.floor((targetDate - now) / (1000 * 60));
+            }
+            
+            // Se a aula é no mesmo dia
+            const currentTime = now.getHours() * 60 + now.getMinutes();
+            return nextClass.start - currentTime;
+        }
+
+        // Atualizar destaque na tabela de horários
+        function updateScheduleHighlighting() {
+            // Remover todas as classes de destaque
+            const allSlots = document.querySelectorAll('.class-slot');
+            allSlots.forEach(slot => {
+                slot.classList.remove('current', 'next');
+            });
+            
+            // Destacar aula atual
+            if (currentClass) {
+                const currentSlotIndex = currentClass.timeIndex * 6 + currentClass.dayIndex + 1;
+                const currentSlot = document.querySelector(`.schedule-body > div:nth-child(${currentSlotIndex})`);
+                if (currentSlot) {
+                    currentSlot.classList.add('current');
+                }
+            }
+            
+            // Destacar próxima aula
+            if (nextClass) {
+                const nextSlotIndex = nextClass.timeIndex * 6 + nextClass.dayIndex + 1;
+                const nextSlot = document.querySelector(`.schedule-body > div:nth-child(${nextSlotIndex})`);
+                if (nextSlot) {
+                    nextSlot.classList.add('next');
+                }
+            }
+        }
+
+        // Mostrar notificação
+        function showNotification(nextClass, minutesUntil) {
+            notificationMessage.textContent = `${nextClass.classData.name} começa em ${minutesUntil} minutos`;
+            notification.classList.add('show');
+            notificationShown = true;
+            
+            // Fechar notificação automaticamente após 10 segundos
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 10000);
+        }
+
+        // Utilitários
+        function formatTime(date) {
+            return date.toLocaleTimeString('pt-BR', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        }
+
+        function timeToMinutes(timeStr) {
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            return hours * 60 + minutes;
+        }
+
+        // Event Listeners
+        notificationClose.addEventListener('click', () => {
+            notification.classList.remove('show');
+        });
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
