@@ -75,9 +75,15 @@
 
         .dashboard {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 20px;
             margin-bottom: 30px;
+        }
+
+        @media (max-width: 992px) {
+            .dashboard {
+                grid-template-columns: 1fr 1fr;
+            }
         }
 
         @media (max-width: 768px) {
@@ -144,6 +150,21 @@
             color: var(--success);
         }
 
+        .countdown.semester {
+            background-color: rgba(155, 89, 182, 0.1);
+            color: #9b59b6;
+            font-size: 1.1rem;
+            padding: 12px;
+        }
+
+        .semester-countdown {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 10px 0;
+            color: #8e44ad;
+            text-align: center;
+        }
+
         .schedule-container {
             background-color: white;
             border-radius: var(--border-radius);
@@ -192,6 +213,7 @@
             flex-direction: column;
             justify-content: center;
             transition: var(--transition);
+            position: relative;
         }
 
         .class-slot.empty {
@@ -199,14 +221,14 @@
         }
 
         .class-slot.current {
-            background-color: rgba(39, 174, 96, 0.08);
+            background-color: rgba(39, 174, 96, 0.15);
             border-left: 4px solid var(--success);
             transform: scale(1.02);
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
         .class-slot.next {
-            background-color: rgba(230, 126, 34, 0.08);
+            background-color: rgba(230, 126, 34, 0.15);
             border-left: 4px solid var(--warning);
         }
 
@@ -304,12 +326,49 @@
             border-top: 1px solid #eee;
         }
 
-        /* Cores para as disciplinas */
-        .CALCULO-I { background-color: rgba(52, 152, 219, 0.05); border-left: 3px solid #3498db; }
-        .ELET-DIG { background-color: rgba(155, 89, 182, 0.05); border-left: 3px solid #9b59b6; }
-        .FISICA-I { background-color: rgba(231, 76, 60, 0.05); border-left: 3px solid #e74c3c; }
-        .PROGRAMACAO { background-color: rgba(46, 204, 113, 0.05); border-left: 3px solid #2ecc71; }
-        .PROJETOS-I { background-color: rgba(241, 196, 15, 0.05); border-left: 3px solid #f1c40f; }
+        /* Cores para as disciplinas - Ajustadas */
+        .CALCULO-I { 
+            background-color: rgba(52, 152, 219, 0.1); 
+            border-left: 3px solid #3498db; 
+        }
+        .ELET-DIG { 
+            background-color: rgba(155, 89, 182, 0.1); 
+            border-left: 3px solid #9b59b6; 
+        }
+        .FISICA-I { 
+            background-color: rgba(231, 76, 60, 0.1); 
+            border-left: 3px solid #e74c3c; 
+        }
+        .PROGRAMACAO { 
+            background-color: rgba(46, 204, 113, 0.1); 
+            border-left: 3px solid #2ecc71; 
+        }
+        .PROJETOS-I { 
+            background-color: rgba(241, 196, 15, 0.1); 
+            border-left: 3px solid #f1c40f; 
+        }
+        
+        /* Ajuste para ELET-DIG(teorica) */
+        .ELET-DIG\\(teorica\\) {
+            background-color: rgba(155, 89, 182, 0.1); 
+            border-left: 3px solid #9b59b6;
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background-color: #e0e0e0;
+            border-radius: 3px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: #3498db;
+            border-radius: 3px;
+            width: 0%;
+            transition: width 1s ease;
+        }
     </style>
 </head>
 <body>
@@ -340,6 +399,21 @@
                         <div class="class-name" id="currentStatusText">Verificando...</div>
                         <div class="class-time" id="currentClassTime">--:-- --:--</div>
                     </div>
+                </div>
+            </div>
+            
+            <div class="info-card">
+                <h2><i class="fas fa-calendar-alt"></i> Fim do Semestre</h2>
+                <div id="semesterCountdown">
+                    <div class="class-info">
+                        <div class="class-name">28 de Fevereiro 2026</div>
+                        <div class="class-time">Último dia do semestre</div>
+                    </div>
+                    <div class="semester-countdown" id="semesterCountdownText">-- dias --:--:--</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="semesterProgress"></div>
+                    </div>
+                    <div class="countdown semester" id="semesterCountdownDays">Faltam -- dias</div>
                 </div>
             </div>
         </div>
@@ -407,8 +481,8 @@
                 [
                     { name: "PROJETOS I", code: "ECO1005", className: "PROJETOS-I" },
                     { name: "PROJETOS I", code: "ECO1005", className: "PROJETOS-I" },
-                    { name: "ELET. DIG.", code: "ECO1003", className: "ELET-DIG" },
-                    { name: "ELET. DIG.", code: "ECO1003", className: "ELET-DIG" },
+                    { name: "ELET. DIG.", code: "ECO1003", className: "ELET-DIG(teorica)" },
+                    { name: "ELET. DIG.", code: "ECO1003", className: "ELET-DIG(teorica)" },
                     { name: "", code: "", className: "empty" },
                     { name: "", code: "", className: "empty" }
                 ],
@@ -454,7 +528,14 @@
         const notification = document.getElementById('notification');
         const notificationMessage = document.getElementById('notificationMessage');
         const notificationClose = document.getElementById('notificationClose');
+        const semesterCountdownText = document.getElementById('semesterCountdownText');
+        const semesterCountdownDays = document.getElementById('semesterCountdownDays');
+        const semesterProgress = document.getElementById('semesterProgress');
 
+        // Datas importantes
+        const semesterStart = new Date('2025-10-13');
+        const semesterEnd = new Date('2026-02-28');
+        
         // Variáveis globais
         let currentClass = null;
         let nextClass = null;
@@ -464,7 +545,9 @@
         function init() {
             renderSchedule();
             updateTime();
+            updateSemesterCountdown();
             setInterval(updateTime, 1000); // Atualizar a cada segundo
+            setInterval(updateSemesterCountdown, 1000); // Atualizar contagem do semestre
         }
 
         // Renderizar a tabela de horários
@@ -483,7 +566,14 @@
                 scheduleData.days.forEach((day, dayIndex) => {
                     const classData = scheduleData.classes[dayIndex][timeIndex];
                     const classSlot = document.createElement('div');
-                    classSlot.className = `class-slot ${classData.className}`;
+                    
+                    // Corrigir nome da classe para ELET-DIG(teorica)
+                    let className = classData.className;
+                    if (className === "ELET-DIG(teorica)") {
+                        className = "ELET-DIG\\(teorica\\)";
+                    }
+                    
+                    classSlot.className = `class-slot ${className}`;
                     
                     if (classData.name) {
                         classSlot.innerHTML = `
@@ -761,6 +851,48 @@
                 if (nextSlot) {
                     nextSlot.classList.add('next');
                 }
+            }
+        }
+
+        // Atualizar contagem regressiva para o fim do semestre
+        function updateSemesterCountdown() {
+            const now = new Date();
+            const endDate = new Date(semesterEnd);
+            
+            // Se já passou da data final
+            if (now > endDate) {
+                semesterCountdownText.textContent = "Semestre encerrado!";
+                semesterCountdownDays.textContent = "Semestre concluído";
+                semesterProgress.style.width = "100%";
+                return;
+            }
+            
+            // Calcular diferença
+            const diff = endDate - now;
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            // Atualizar texto
+            semesterCountdownText.textContent = `${days} dias ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            semesterCountdownDays.textContent = `Faltam ${days} dias`;
+            
+            // Calcular progresso (do início ao fim do semestre)
+            const totalSemesterDays = Math.floor((semesterEnd - semesterStart) / (1000 * 60 * 60 * 24));
+            const daysPassed = Math.floor((now - semesterStart) / (1000 * 60 * 60 * 24));
+            const progressPercentage = Math.min(100, Math.max(0, (daysPassed / totalSemesterDays) * 100));
+            
+            // Atualizar barra de progresso
+            semesterProgress.style.width = `${progressPercentage}%`;
+            
+            // Mudar cor conforme se aproxima do fim
+            if (days < 7) {
+                semesterCountdownDays.style.backgroundColor = "rgba(231, 76, 60, 0.1)";
+                semesterCountdownDays.style.color = "#e74c3c";
+            } else if (days < 30) {
+                semesterCountdownDays.style.backgroundColor = "rgba(230, 126, 34, 0.1)";
+                semesterCountdownDays.style.color = "#e67e22";
             }
         }
 
