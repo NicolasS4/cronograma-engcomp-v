@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Horário Acadêmico - UFPA 2026.2</title>
+    <title>Horário Acadêmico - UFPA 2026.4</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -16,7 +16,7 @@
             --light: #ecf0f1;
             --dark: #1a252f;
             --gray: #95a5a6;
-            --border-radius: 6px;
+            --border-radius: 8px;
             --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             --transition: all 0.3s ease;
         }
@@ -29,7 +29,7 @@
         }
 
         body {
-            background-color: #f8f9fa;
+            background-color: #f4f7f6;
             color: var(--dark);
             line-height: 1.6;
             padding: 20px;
@@ -107,15 +107,11 @@
         }
 
         @media (max-width: 992px) {
-            .dashboard {
-                grid-template-columns: 1fr 1fr;
-            }
+            .dashboard { grid-template-columns: 1fr 1fr; }
         }
 
         @media (max-width: 768px) {
-            .dashboard {
-                grid-template-columns: 1fr;
-            }
+            .dashboard { grid-template-columns: 1fr; }
         }
 
         .info-card {
@@ -355,14 +351,13 @@
             border-top: 1px solid #eee;
         }
 
-        /* Novas Cores para as disciplinas 2026.2 */
+        /* Cores exclusivas das disciplinas de 2026.4 */
         .ESTRUTURA-DADOS { background-color: rgba(52, 152, 219, 0.1); border-left: 3px solid #3498db; }
         .CALCULO-II { background-color: rgba(155, 89, 182, 0.1); border-left: 3px solid #9b59b6; }
-        .ALGEBRA-LINEAR { background-color: rgba(231, 76, 60, 0.1); border-left: 3px solid #e74c3c; }
-        .ARQUITETURA-COMP { background-color: rgba(46, 204, 113, 0.1); border-left: 3px solid #2ecc71; }
-        .FISICA-II { background-color: rgba(243, 156, 18, 0.1); border-left: 3px solid #f39c12; }
-        .VARIAVEIS-COMP { background-color: rgba(26, 188, 156, 0.1); border-left: 3px solid #1abc9c; }
-        .PROJETO-ENG-II { background-color: rgba(52, 73, 94, 0.1); border-left: 3px solid #34495e; }
+        .CALCULO-III { background-color: rgba(231, 76, 60, 0.1); border-left: 3px solid #e74c3c; }
+        .SISTEMAS-OP { background-color: rgba(46, 204, 113, 0.1); border-left: 3px solid #2ecc71; }
+        .CIRCUITOS { background-color: rgba(243, 156, 18, 0.1); border-left: 3px solid #f39c12; }
+        .REDES-I { background-color: rgba(52, 73, 94, 0.1); border-left: 3px solid #34495e; }
 
         .progress-bar {
             height: 6px;
@@ -385,7 +380,7 @@
     <div class="container">
         <header>
             <h1>Horário Semanal Acadêmico - Eng. Computação</h1>
-            <div class="subtitle">Período: 23/03/2026 a 23/07/2026 (Semestre 2026.2)</div>
+            <div class="subtitle">Período: 24/08/2026 a 23/12/2026 (Semestre 2026.4)</div>
             <div class="header-controls">
                 <div class="current-time" id="currentTime">Carregando...</div>
                 <button class="notify-btn" id="enableNotifications" onclick="requestNotificationPermission()">
@@ -421,7 +416,7 @@
                 <h2><i class="fas fa-calendar-alt"></i> Fim do Semestre</h2>
                 <div id="semesterCountdown">
                     <div class="class-info">
-                        <div class="class-name">23 de Julho de 2026</div>
+                        <div class="class-name">23 de Dezembro de 2026</div>
                         <div class="class-time">Último dia do período letivo</div>
                     </div>
                     <div class="semester-countdown" id="semesterCountdownText">-- dias --:--:--</div>
@@ -443,7 +438,8 @@
                 <div>Sexta-feira</div>
             </div>
             <div class="schedule-body" id="scheduleBody">
-                </div>
+                <!-- Gerado por JS -->
+            </div>
         </div>
 
         <div class="legend">
@@ -465,65 +461,65 @@
 
         <footer>
             <p><strong>Legenda das Disciplinas:</strong></p>
-            <p>ESTRUTURA DE DADOS (EC01007) · CÁLCULO II (UFPA002) · ÁLGEBRA LINEAR (EC01009) · ARQUITETURA DE COMP. (EC01008)<br>FÍSICA II (EC01012) · VARIÁVEIS COMPLEXAS (EC01010) · PROJETO DE ENG. II (EC01011)</p>
+            <p>ESTRUTURA DE DADOS (EC01007) · CÁLCULO II (UFPA002) · CÁLCULO III (EC01013) <br>SISTEMAS OPERACIONAIS (EC01016) · CIRCUITOS ELÉTRICOS (EC01014) · REDES DE COMPUTADORES I (EC01015)</p>
         </footer>
     </div>
 
     <script>
-        // Dados do novo horário 2026.2
+        // Dados do novo horário 2026.4 combinando os blocos de 50min em duplas
         const scheduleData = {
             times: [
-                { start: "13:00", end: "13:50" },
-                { start: "13:50", end: "14:40" },
-                { start: "14:50", end: "15:40" },
-                { start: "15:40", end: "16:30" },
-                { start: "16:40", end: "17:30" },
-                { start: "17:30", end: "18:20" }
+                { start: "07:30", end: "09:10" },
+                { start: "09:20", end: "11:00" },
+                { start: "11:10", end: "12:50" },
+                { start: "13:00", end: "14:40" },
+                { start: "14:50", end: "16:30" },
+                { start: "16:40", end: "18:20" }
             ],
             days: ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira"],
             classes: [
                 // Segunda-feira
                 [
                     { name: "ESTRUTURA DE DADOS", code: "EC01007", className: "ESTRUTURA-DADOS" },
-                    { name: "ESTRUTURA DE DADOS", code: "EC01007", className: "ESTRUTURA-DADOS" },
+                    { name: "", code: "", className: "empty" },
                     { name: "CÁLCULO II", code: "UFPA002", className: "CALCULO-II" },
-                    { name: "CÁLCULO II", code: "UFPA002", className: "CALCULO-II" },
-                    { name: "ÁLGEBRA LINEAR", code: "EC01009", className: "ALGEBRA-LINEAR" },
-                    { name: "ÁLGEBRA LINEAR", code: "EC01009", className: "ALGEBRA-LINEAR" }
+                    { name: "SISTEMAS OP.", code: "EC01016", className: "SISTEMAS-OP" },
+                    { name: "CIRCUITOS ELÉTRICOS", code: "EC01014", className: "CIRCUITOS" },
+                    { name: "", code: "", className: "empty" }
                 ],
                 // Terça-feira
                 [
                     { name: "", code: "", className: "empty" },
                     { name: "", code: "", className: "empty" },
-                    { name: "ARQUITETURA COMP.", code: "EC01008", className: "ARQUITETURA-COMP" },
-                    { name: "ARQUITETURA COMP.", code: "EC01008", className: "ARQUITETURA-COMP" },
-                    { name: "FÍSICA II", code: "EC01012", className: "FISICA-II" },
-                    { name: "FÍSICA II", code: "EC01012", className: "FISICA-II" }
+                    { name: "", code: "", className: "empty" },
+                    { name: "", code: "", className: "empty" },
+                    { name: "CÁLCULO III", code: "EC01013", className: "CALCULO-III" },
+                    { name: "REDES DE COMP. I", code: "EC01015", className: "REDES-I" }
                 ],
                 // Quarta-feira
                 [
                     { name: "ESTRUTURA DE DADOS", code: "EC01007", className: "ESTRUTURA-DADOS" },
-                    { name: "ESTRUTURA DE DADOS", code: "EC01007", className: "ESTRUTURA-DADOS" },
+                    { name: "", code: "", className: "empty" },
                     { name: "CÁLCULO II", code: "UFPA002", className: "CALCULO-II" },
-                    { name: "CÁLCULO II", code: "UFPA002", className: "CALCULO-II" },
-                    { name: "VARIÁVEIS COMP.", code: "EC01010", className: "VARIAVEIS-COMP" },
-                    { name: "VARIÁVEIS COMP.", code: "EC01010", className: "VARIAVEIS-COMP" }
+                    { name: "SISTEMAS OP.", code: "EC01016", className: "SISTEMAS-OP" },
+                    { name: "CIRCUITOS ELÉTRICOS", code: "EC01014", className: "CIRCUITOS" },
+                    { name: "", code: "", className: "empty" }
                 ],
                 // Quinta-feira
                 [
-                    { name: "PROJETO ENG. II", code: "EC01011", className: "PROJETO-ENG-II" },
-                    { name: "PROJETO ENG. II", code: "EC01011", className: "PROJETO-ENG-II" },
-                    { name: "ARQUITETURA COMP.", code: "EC01008", className: "ARQUITETURA-COMP" },
-                    { name: "ARQUITETURA COMP.", code: "EC01008", className: "ARQUITETURA-COMP" },
-                    { name: "FÍSICA II", code: "EC01012", className: "FISICA-II" },
-                    { name: "FÍSICA II", code: "EC01012", className: "FISICA-II" }
+                    { name: "", code: "", className: "empty" },
+                    { name: "", code: "", className: "empty" },
+                    { name: "", code: "", className: "empty" },
+                    { name: "", code: "", className: "empty" },
+                    { name: "CÁLCULO III", code: "EC01013", className: "CALCULO-III" },
+                    { name: "REDES DE COMP. I", code: "EC01015", className: "REDES-I" }
                 ],
                 // Sexta-feira
                 [
                     { name: "ESTRUTURA DE DADOS", code: "EC01007", className: "ESTRUTURA-DADOS" },
-                    { name: "ESTRUTURA DE DADOS", code: "EC01007", className: "ESTRUTURA-DADOS" },
+                    { name: "", code: "", className: "empty" },
                     { name: "CÁLCULO II", code: "UFPA002", className: "CALCULO-II" },
-                    { name: "CÁLCULO II", code: "UFPA002", className: "CALCULO-II" },
+                    { name: "CIRCUITOS ELÉTRICOS", code: "EC01014", className: "CIRCUITOS" },
                     { name: "", code: "", className: "empty" },
                     { name: "", code: "", className: "empty" }
                 ]
@@ -547,14 +543,14 @@
         const semesterProgress = document.getElementById('semesterProgress');
         const notifyBtn = document.getElementById('enableNotifications');
 
-        // Novas datas do calendário UFPA 2026.2
-        const semesterStart = new Date('2026-03-23T00:00:00');
-        const semesterEnd = new Date('2026-07-23T23:59:59');
+        // Datas do calendário UFPA 2026.4
+        const semesterStart = new Date('2026-08-24T00:00:00');
+        const semesterEnd = new Date('2026-12-23T23:59:59');
         
         // Variáveis globais
         let currentClass = null;
         let nextClass = null;
-        let notificationShownFor = null; // Guarda o ID da aula notificada para não repetir
+        let notificationShownFor = null;
 
         // Inicialização
         function init() {
@@ -566,7 +562,7 @@
             checkNotificationStatus();
         }
 
-        // Permissões e API de Notificação Nativa
+        // Permissões e API de Notificação
         function checkNotificationStatus() {
             if (!("Notification" in window)) {
                 notifyBtn.style.display = 'none';
@@ -587,9 +583,8 @@
                 if (permission === "granted") {
                     notifyBtn.innerHTML = '<i class="fas fa-bell-slash"></i> Notificações Ativas';
                     notifyBtn.style.backgroundColor = 'var(--success)';
-                    new Notification("Horário Acadêmico", {
-                        body: "Notificações ativadas com sucesso! Você será avisado antes das aulas.",
-                        icon: "https://cdn-icons-png.flaticon.com/512/3234/3234972.png"
+                    new Notification("Horário Acadêmico UFPA", {
+                        body: "Notificações ativadas! Você será avisado antes das aulas.",
                     });
                 }
             });
@@ -599,13 +594,12 @@
             if ("Notification" in window && Notification.permission === "granted") {
                 new Notification(title, {
                     body: body,
-                    icon: "https://cdn-icons-png.flaticon.com/512/3234/3234972.png",
                     vibrate: [200, 100, 200]
                 });
             }
         }
 
-        // Renderizar a tabela de horários
+        // Renderizar a tabela
         function renderSchedule() {
             scheduleBody.innerHTML = '';
             scheduleData.times.forEach((time, timeIndex) => {
@@ -633,7 +627,6 @@
             });
         }
 
-        // Atualizar informações de tempo
         function updateTime() {
             const now = new Date();
             const currentTime = formatTime(now);
@@ -664,7 +657,6 @@
             currentClass = null;
             nextClass = null;
             
-            // Aula atual
             for (let i = 0; i < scheduleData.times.length; i++) {
                 const classTime = scheduleData.times[i];
                 const classStart = timeToMinutes(classTime.start);
@@ -690,7 +682,6 @@
                 }
             }
             
-            // Próxima aula (se não houver aula atual ou procurando a próxima)
             if (!foundCurrent) {
                 currentStatusTextElement.textContent = "Sem aula no momento";
                 currentClassTimeElement.textContent = "";
@@ -744,11 +735,10 @@
                 countdownElement.textContent = `Começa em: ${hoursUntil}h ${minutesUntil}m`;
                 countdownElement.className = "countdown";
                 
-                // Exibir notificação faltando exatos 15 minutos ou 5 minutos
                 const classUniqueId = `${nextClass.dayIndex}-${nextClass.timeIndex}`;
                 if ((timeUntilClass === 15 || timeUntilClass === 5) && notificationShownFor !== classUniqueId + timeUntilClass) {
                     showNotification(nextClass, timeUntilClass);
-                    notificationShownFor = classUniqueId + timeUntilClass; // Evita spam
+                    notificationShownFor = classUniqueId + timeUntilClass; 
                 }
             }
         }
@@ -806,11 +796,11 @@
             
             if (now > semesterEnd) {
                 semesterCountdownText.textContent = "Semestre encerrado!";
-                semesterCountdownDays.textContent = "Semestre concluído";
+                semesterCountdownDays.textContent = "Boas férias!";
                 semesterProgress.style.width = "100%";
                 return;
             } else if (now < semesterStart) {
-                semesterCountdownText.textContent = "Semestre ainda não começou";
+                semesterCountdownText.textContent = "O semestre inicia amanhã!";
                 semesterCountdownDays.textContent = "Aguardando início";
                 semesterProgress.style.width = "0%";
                 return;
@@ -843,12 +833,10 @@
         function showNotification(nextClass, minutesUntil) {
             const msg = `${nextClass.classData.name} começa em ${minutesUntil} minutos (${scheduleData.times[nextClass.timeIndex].start})`;
             
-            // Notificação na interface (HTML)
             notificationMessage.textContent = msg;
             notification.classList.add('show');
             setTimeout(() => { notification.classList.remove('show'); }, 15000);
 
-            // Notificação nativa no celular/sistema operacional
             triggerNativeNotification("Aula Perto de Começar!", msg);
         }
 
